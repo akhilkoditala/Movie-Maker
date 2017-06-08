@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Movie Maker</string>
+    <string-array name="imageLen">
+        <item>1 Sec</item>
+        <item>2 Sec</item>
+        <item>3 Sec</item>
+        <item>4 Sec</item>
+    </string-array>
+</resources>
