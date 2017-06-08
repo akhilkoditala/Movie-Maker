@@ -2,11 +2,14 @@ package com.example.smartron.recyclerimage;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -98,5 +101,28 @@ public class AudioSelection extends AppCompatActivity {
                 path = cursor.getString(column_index);
             }
         return path;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean Accepted;
+
+        switch(requestCode){
+            case 210:
+                Accepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            Log.e("Read Permission : ","No Permission");
+            String perms[] = {"android.permission.READ_EXTERNAL_STORAGE"};
+            int permsRequestCode = 210;
+            ActivityCompat.requestPermissions(this,perms, permsRequestCode);
+        }
     }
 }

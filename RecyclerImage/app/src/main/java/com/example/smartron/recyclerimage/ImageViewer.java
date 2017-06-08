@@ -21,6 +21,7 @@ public class ImageViewer extends AppCompatActivity {
         Intent intent = getIntent();
         String path = intent.getStringExtra("image");
         iv.setImageBitmap(BitmapFactory.decodeFile(getRealPathFromURI(Uri.parse(path))));
+        //iv.setImageBitmap(BitmapFactory.decodeFile(path));
     }
 
     public String getRealPathFromURI (Uri contentUri) {

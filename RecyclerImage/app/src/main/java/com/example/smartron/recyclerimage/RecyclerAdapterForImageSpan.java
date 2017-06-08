@@ -3,6 +3,7 @@ package com.example.smartron.recyclerimage;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,6 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
     ArrayList<String> images = new ArrayList<>();
     ArrayList<String> imagesLen = new ArrayList<>();
     Context c;
-    int index;
 
     public RecyclerAdapterForImageSpan(Context c){
         this.c = c;
@@ -42,10 +42,9 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
         if(position < images.size()) {
             Glide.with(c).load(Uri.parse(images.get(position))).into(holder.image);
-            index = position;
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(c, R.array.imageLen, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             holder.spinner.setAdapter(adapter);
@@ -53,10 +52,10 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
             holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                    //onSpinnerChange(pos);
-                    imagesLen.set(index,""+pos);
+                    imagesLen.set(position,""+pos);
                     ImageSpan1 is1 = new ImageSpan1();
-                    is1.update(index,pos);
+                    is1.update(position,pos);
+                    Log.d("Position : ",""+position+" Pos : "+pos);
                 }
 
                 @Override
@@ -65,12 +64,6 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
                 }
             });
         }
-    }
-
-    public void onSpinnerChange(int val){
-        imagesLen.set(index,""+val);
-        ImageSpan1 is1 = new ImageSpan1();
-        is1.update(index,val);
     }
 
     @Override

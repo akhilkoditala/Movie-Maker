@@ -28,6 +28,7 @@ import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.FrameRecorder;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.jcodec.api.android.SequenceEncoder;
+import org.jcodec.common.RunLength;
 
 import java.io.File;
 import java.net.URI;
@@ -64,6 +65,9 @@ public class VideoActivity1 extends AppCompatActivity {
         imagesPath = intent.getStringArrayListExtra("images");
         audioPath = intent.getStringExtra("audio");
         imagesLen = intent.getStringArrayListExtra("imagesLen");
+
+        for(String s : imagesLen)
+            Log.d("Position : ",""+ Integer.parseInt(s));
 
         File folder = getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
         path = folder.getAbsolutePath();
@@ -158,7 +162,7 @@ public class VideoActivity1 extends AppCompatActivity {
 
                 for(int i = 0;i < imagesPath.size(); i++) {
                     imageTime = (Integer.parseInt(imagesLen.get(i)) + 1) * 1000000;
-                    Log.d("Image Length of "+(i+1)+" Song : ",""+Integer.parseInt(imagesLen.get(i)) + 1);
+                    //imageTime = (2) * 1000000;
                     Uri uri = Uri.parse(imagesPath.get(i));
                     opencv_core.IplImage image = cvLoadImage(getRealPathFromURI(uri));
                     Frame frame = converter.convert(image);
