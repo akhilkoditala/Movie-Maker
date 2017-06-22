@@ -2,20 +2,17 @@ package com.example.smartron.recyclerimage;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.SyncStateContract;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import org.jcodec.api.android.SequenceEncoder;
-import org.jcodec.scale.RgbToYuv420p;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,8 +21,8 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class VideoActivity extends AppCompatActivity {
 
-    VideoView vv;
-    ArrayList<String> imagesPath = new ArrayList<String>();
+    private VideoView vv;
+    private ArrayList<String> imagesPath = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +37,12 @@ public class VideoActivity extends AppCompatActivity {
         mv.execute();
     }
 
-    public class makeVideo extends AsyncTask {
-        ProgressDialog pd = new ProgressDialog(VideoActivity.this);
+    public class makeVideo extends AsyncTask<Object,Void,Object> {
+        final ProgressDialog pd = new ProgressDialog(VideoActivity.this);
 
-        Long ti = System.currentTimeMillis() / 1000;
-        String tim = ti.toString();
-        File file = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "Video" + tim + ".mp4");
+        final Long ti = System.currentTimeMillis() / 1000;
+        final String tim = ti.toString();
+        final File file = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "Video" + tim + ".mp4");
 
         @Override
         protected void onPreExecute() {
@@ -64,7 +61,7 @@ public class VideoActivity extends AppCompatActivity {
             MediaController mediaController = new MediaController(VideoActivity.this);
             mediaController.setAnchorView(vv);
 
-            Uri uri = Uri.parse(getFilesDir().getPath()+"/Video" + tim + ".mp4");
+            //Uri uri = Uri.parse(getFilesDir().getPath()+"/Video" + tim + ".mp4");
 
             vv.setMediaController(mediaController);
             vv.setVideoURI(Uri.parse(file.getAbsolutePath()));
@@ -74,10 +71,11 @@ public class VideoActivity extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] params) {
-            SequenceEncoder encoder = null;
+            SequenceEncoder encoder;
             Log.e("Video thread",""+imagesPath.size());
             try {
-                file.createNewFile();
+                boolean stat = file.createNewFile();
+                Log.d("File Creation status : ",stat+"");
                 encoder = new SequenceEncoder(file);
                 Log.d("Size : ",String.valueOf(imagesPath.size()));
                 for (int i = 0; i < imagesPath.size(); i++) {

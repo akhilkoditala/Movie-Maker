@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/addButt"
-        android:icon="@drawable/ic_add_circle_black_24dp"
-        android:title="@string/add"
+        android:id="@+id/captureButt"
+        android:icon="@drawable/ic_camera_alt_black_24dp"
+        android:title="Capture"
         app:showAsAction="always"
         />
 

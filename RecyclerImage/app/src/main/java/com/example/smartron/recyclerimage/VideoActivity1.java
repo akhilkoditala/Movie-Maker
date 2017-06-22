@@ -4,9 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -18,42 +15,39 @@ import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
-import org.bytedeco.javacpp.avcodec;
 import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_highgui;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.FrameRecorder;
 import org.bytedeco.javacv.OpenCVFrameConverter;
-import org.jcodec.api.android.SequenceEncoder;
-import org.jcodec.common.RunLength;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URLConnection;
-import java.security.Timestamp;
 import java.util.ArrayList;
 
 import static android.os.Environment.getExternalStoragePublicDirectory;
-import static org.bytedeco.javacpp.avcodec.AV_CODEC_ID_AAC;
-import static org.bytedeco.javacpp.avcodec.AV_CODEC_ID_H264;
 import static org.bytedeco.javacpp.avcodec.AV_CODEC_ID_MPEG4;
-import static org.bytedeco.javacpp.opencv_core.cvReleaseImage;
 import static org.bytedeco.javacpp.opencv_imgcodecs.cvLoadImage;
 
 public class VideoActivity1 extends AppCompatActivity {
 
-    VideoView vv;
-    ArrayList<String> imagesPath = new ArrayList<String>();
-    ArrayList<String> imagesLen = new ArrayList<>();
-    String audioPath;
+    private VideoView vv;
+    private ArrayList<String> imagesPath = new ArrayList<>();
+    private ArrayList<String> imagesLen = new ArrayList<>();
+    private String audioPath;
 
-    Long ti = System.currentTimeMillis() / 1000;
-    String tim = ti.toString();
+    private final Long ti = System.currentTimeMillis() / 1000;
+    private final String tim = ti.toString();
 
-    String path;
+    //String path;
+
+    public static void Starter(Context c,ArrayList<String> imagesPath, String audioPath, ArrayList<String> imagesLen){
+        Intent intent = new Intent(c,VideoActivity1.class);
+        intent.putStringArrayListExtra("images",imagesPath);
+        intent.putExtra("audio",audioPath);
+        intent.putStringArrayListExtra("imagesLen",imagesLen);
+        c.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +63,8 @@ public class VideoActivity1 extends AppCompatActivity {
         for(String s : imagesLen)
             Log.d("Position : ",""+ Integer.parseInt(s));
 
-        File folder = getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-        path = folder.getAbsolutePath();
+        //File folder = getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        //path = folder.getAbsolutePath();
 
         MovieMaker mv = new MovieMaker();
         mv.execute();
@@ -78,11 +72,11 @@ public class VideoActivity1 extends AppCompatActivity {
         Log.d("Size : ",""+imagesPath.size());
     }
 
-    public class MovieMaker extends AsyncTask {
+    public class MovieMaker extends AsyncTask<Object,Void,Object> {
 
-        private ProgressDialog pd = new ProgressDialog(VideoActivity1.this);
-        File file = new File(String.valueOf(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)));
-        File file1 = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),"video"+tim+".mp4");
+        private final ProgressDialog pd = new ProgressDialog(VideoActivity1.this);
+        //final File file = new File(String.valueOf(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)));
+        final File file1 = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),"video"+tim+".mp4");
 
         @Override
         protected void onPreExecute() {
@@ -114,8 +108,10 @@ public class VideoActivity1 extends AppCompatActivity {
         private String createMovie(){
 
             try {
-                file.mkdirs();
-                file1.createNewFile();
+                //file.mkdirs();
+                boolean stat = file1.createNewFile();
+                Log.d("File Creation status : ",stat+"");
+                //file1.createNewFile();
 
                 DisplayMetrics metrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -146,8 +142,8 @@ public class VideoActivity1 extends AppCompatActivity {
                 recorder.setFormat("mp4");
                 recorder.start();
 
-                int imageTime = 2000000;
-                long audioTime = (long)(grabber.getLengthInTime()/1000000);
+                int imageTime;
+                //long audioTime = (grabber.getLengthInTime()/1000000);
 
                 Frame fr;
 
@@ -162,27 +158,36 @@ public class VideoActivity1 extends AppCompatActivity {
 
                 for(int i = 0;i < imagesPath.size(); i++) {
                     imageTime = (Integer.parseInt(imagesLen.get(i)) + 1) * 1000000;
+                    Log.d("ImageTime : ",imageTime+"");
                     //imageTime = (2) * 1000000;
                     Uri uri = Uri.parse(imagesPath.get(i));
-                    opencv_core.IplImage image = cvLoadImage(getRealPathFromURI(uri));
+                    Log.d("Before Uri Func : ",uri.toString());
+                    //Log.d("After Uri Func : ",getRealPathFromURI(uri));
+                    opencv_core.IplImage image;
+                    //if(Integer.parseInt(imagesSrc.get(i)) == 1)
+                        image = cvLoadImage(getRealPathFromURI(uri));
+                    //else
+                        //image = cvLoadImage(imagesPath.get(i));
                     Frame frame = converter.convert(image);
                     //Log.d("Path : ", imagesPath.get(i));
                     recorder.record(frame);
                     //Log.d("Before Set : ",""+recorder.getTimestamp());
                     sum += imageTime;
-                    long time = sum;
-                    if (time > recorder.getTimestamp())
-                        recorder.setTimestamp(time);
+                    //long time = sum;
+                    if (sum > recorder.getTimestamp())
+                        recorder.setTimestamp(sum);
                     //Log.d("After Set : ",""+recorder.getTimestamp());
-                    fr = grabber.grabFrame();
+                    //fr = grabber.grabFrame();
                 }
 
-                long audioLen = (long) (grabber.getLengthInTime()/1000000);
+                Log.d("Video Length : ",""+recorder.getTimestamp());
+
+                long audioLen = (grabber.getLengthInTime()/1000000);
                 long audioFrames = (long) (Math.ceil(grabber.getLengthInTime() / (24 * 1000)));
-                long videoLen = (long) (recorder.getTimestamp()/1000000);
+                long videoLen = (recorder.getTimestamp()/1000000);
 
                 long y = (long) Math.floor(videoLen / audioLen);
-                long x = (long) videoLen % audioLen;
+                long x = videoLen % audioLen;
 
                 for(long i = 0;i < y;i++){
                     //grabber = new FFmpegFrameGrabber(getRealPahFromAudioURI(Uri.parse(audioPath)));
@@ -216,17 +221,17 @@ public class VideoActivity1 extends AppCompatActivity {
                 recorder.stop();
                 recorder.release();
                 grabber.stop();
+                grabber.release();
                 //mergeAudioAndVideo(imageTime);
-                File file = new File(audioPath);
-                file.delete();
             } catch (Exception e) {
                 Log.e("Problem","Problem",e);
                 e.printStackTrace();
             }
-            return path+"/video"+tim+".mp4";
+            //return path+"/video"+tim+".mp4";
+            return "/video"+tim+".mp4";
         }
 
-        public String getRealPahFromAudioURI (Uri contentUri){
+        /*public String getRealPahFromAudioURI (Uri contentUri){
             String[] proj = { MediaStore.Audio.Media.DATA };
             Cursor cursor = getContentResolver().query(contentUri,proj, null, null, null);
             String path = null;
@@ -235,20 +240,23 @@ public class VideoActivity1 extends AppCompatActivity {
                     int column_index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
                     path = cursor.getString(column_index);
                 }
+                cursor.close();
                 return path;
             }
             return "";
-        }
+        }*/
 
         public String getRealPathFromURI (Uri contentUri) {
             String path = null;
             String[] proj = { MediaStore.MediaColumns.DATA };
             Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-            if (cursor.moveToFirst()) {
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                path = cursor.getString(column_index);
+            if(cursor != null) {
+                if (cursor.moveToFirst()) {
+                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                    path = cursor.getString(column_index);
+                }
+                cursor.close();
             }
-            cursor.close();
             return path;
         }
 

@@ -16,14 +16,10 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-/**
- * Created by Smartron on 6/7/2017.
- */
-
 public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAdapterForImageSpan.RecyclerViewHolder>{
-    ArrayList<String> images = new ArrayList<>();
-    ArrayList<String> imagesLen = new ArrayList<>();
-    Context c;
+    private ArrayList<String> images = new ArrayList<>();
+    private ArrayList<String> imagesLen = new ArrayList<>();
+    private final Context c;
 
     public RecyclerAdapterForImageSpan(Context c){
         this.c = c;
@@ -42,7 +38,7 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerViewHolder holder, int position) {
         if(position < images.size()) {
             Glide.with(c).load(Uri.parse(images.get(position))).into(holder.image);
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(c, R.array.imageLen, android.R.layout.simple_spinner_item);
@@ -52,10 +48,10 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
             holder.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                    imagesLen.set(position,""+pos);
+                    imagesLen.set(holder.getAdapterPosition(),""+pos);
                     ImageSpan1 is1 = new ImageSpan1();
-                    is1.update(position,pos);
-                    Log.d("Position : ",""+position+" Pos : "+pos);
+                    is1.update(holder.getAdapterPosition(),pos);
+                    Log.d("Position : ",""+holder.getAdapterPosition()+" Pos : "+pos);
                 }
 
                 @Override
@@ -74,8 +70,8 @@ public class RecyclerAdapterForImageSpan extends RecyclerView.Adapter<RecyclerAd
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView image;
-        Spinner spinner;
+        final ImageView image;
+        final Spinner spinner;
 
         public RecyclerViewHolder(View view){
             super(view);

@@ -12,22 +12,25 @@ import java.util.ArrayList;
 
 public class ImageSpan extends AppCompatActivity {
 
-    ArrayList<String> imagesPath = new ArrayList<>();
-    String audioPath;
-    RangeSliderView slider;
-    Button doneButt;
+    private ArrayList<String> imagesPath = new ArrayList<>();
+    private String audioPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_span);
 
+        RangeSliderView slider;
+        Button doneButt;
+
         Intent intent = getIntent();
         imagesPath = intent.getStringArrayListExtra("images");
         audioPath = intent.getStringExtra("audio");
 
         slider = (RangeSliderView) findViewById(R.id.slider);
+        slider.setEnabled(true);
         doneButt = (Button) findViewById(R.id.doneButt);
+        doneButt.setText(R.string.done);
 
         doneButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,7 +40,7 @@ public class ImageSpan extends AppCompatActivity {
         });
     }
 
-    public void onDoneClick(){
+    private void onDoneClick(){
         Intent intent = new Intent(this,VideoActivity1.class);
         intent.putStringArrayListExtra("images",imagesPath);
         intent.putExtra("audio",audioPath);

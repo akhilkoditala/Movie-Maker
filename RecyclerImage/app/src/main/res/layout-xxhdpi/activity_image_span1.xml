@@ -4,11 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.smartron.recyclerimage.VideoActivity">
+    tools:context="com.example.smartron.recyclerimage.ImageSpan1">
 
-    <VideoView
-        android:id="@+id/videoView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewImageSpan"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+    
 
 </RelativeLayout>
