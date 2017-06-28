@@ -3,6 +3,7 @@ package com.example.smartron.recyclerimage;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,13 +27,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerAdapter adapter;
     private String mCurrentPhotoPath;
+    private final ArrayList<String> imagesTitle = new ArrayList<>();
     TextView tv;
+    /*ItemTouchHelper.Callback callback;
+    ItemTouchHelper touchHelper;*/
 
     // RecyclerView.LayoutManager layout;
     //List<Uri> imageUrl = new ArrayList<>();
@@ -77,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
         tv.setVisibility(View.VISIBLE);*/
         recyclerView.setAdapter(adapter);
 
+        /*callback = new ItemTouchHelperCallback(adapter);
+        touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);*/
+
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_images,menu);
-        getMenuInflater().inflate(R.menu.capture_image,menu);
-        getMenuInflater().inflate(R.menu.next_activity,menu);
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        //getMenuInflater().inflate(R.menu.capture_image,menu);
+        //getMenuInflater().inflate(R.menu.next_activity,menu);
         return true;
     }
 
@@ -137,8 +146,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nextButt:
                 if(adapter.getSize() == 0)
                     Toast.makeText(this, "Please Select Images !!", Toast.LENGTH_SHORT).show();
-                else
-                    AudioSelection.Starter(this,adapter.getPath());
+                else {
+                    imagesTitle.clear();
+                    for(String u : adapter.getPath()){
+                        File f = new File(getRealPathFromURI(Uri.parse(u)));
+                        imagesTitle.add(f.getName());
+                    }
+                    //AudioSelection.Starter(this, adapter.getPath());
+                    DragAndDrop.Starter(this, adapter.getPath(), imagesTitle);
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -148,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == Activity.RESULT_OK){
             if(requestCode == 6) {
                 adapter.setData(data.getData());
+                File f = new File(getRealPathFromURI(data.getData()));
+                Toast.makeText(this, f.getName(), Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
             }
             if(requestCode == 7){
@@ -163,6 +181,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public String getRealPathFromURI (Uri contentUri) {
+        String path = null;
+        String[] proj = { MediaStore.MediaColumns.DATA };
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if(cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                path = cursor.getString(column_index);
+            }
+            cursor.close();
+        }
+        return path;
     }
 
     private File createImageFile(String tim) throws IOException {

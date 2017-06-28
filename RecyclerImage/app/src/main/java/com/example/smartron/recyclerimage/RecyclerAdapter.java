@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.googlecode.mp4parser.srt.SrtParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerViewHolder>{
 
     private final List<Uri> images = new ArrayList<>();
     private final ArrayList<String> imagesPath = new ArrayList<>();
@@ -43,12 +46,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         //Log.d("TextView : ","Text set");
     }
 
-    /*public void setData(List<Uri> images) {
-        this.images = images;
-        imagesPath.clear();
-        for(Uri uri : images)
-            imagesPath.add(uri.toString());
-    }*/
+
+    public int getSize(){
+        return images.size();
+    }
 
     public void setData(Uri image) {
         images.add(image);
@@ -57,10 +58,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             TextView tv = (TextView) ((Activity)c).findViewById(R.id.tv);
             tv.setText("");
         }
-    }
-
-    public int getSize(){
-        return images.size();
     }
 
     public ArrayList<String> getPath(){
@@ -111,6 +108,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 holder.image.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
+
+                        Vibrator vib = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
+                        vib.vibrate(1000);
+
                         //Toast.makeText(c,"Long Click !!",Toast.LENGTH_SHORT).show();
                         final CharSequence[] items = {"Delete"};
 
@@ -161,6 +162,39 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public int getItemCount() {
         return images.size() + 1;
     }
+
+    /*@Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        int i;
+        Uri uri = images.get(fromPosition);
+        String path = imagesPath.get(fromPosition);
+        if(fromPosition < toPosition){
+            for(i=fromPosition;i<toPosition;i++){
+                images.set(i,images.get(i+1));
+                imagesPath.set(i,imagesPath.get(i+1));
+            }
+        }
+        else{
+            for (i = fromPosition; i > toPosition; i--) {
+                images.set(i,images.get(i-1));
+                imagesPath.set(i,imagesPath.get(i-1));
+            }
+        }
+        imagesPath.set(toPosition,path);
+        images.set(toPosition,uri);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        images.remove(position);
+        imagesPath.remove(position);
+        notifyItemRemoved(position);
+        if(images.size() == 0) {
+            TextView tv = (TextView) ((Activity) c).findViewById(R.id.tv);
+            tv.setText(R.string.noImagesSelected);
+        }
+    }*/
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
 

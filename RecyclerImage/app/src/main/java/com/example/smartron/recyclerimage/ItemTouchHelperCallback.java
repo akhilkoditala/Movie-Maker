@@ -1,5 +1,6 @@
 package com.example.smartron.recyclerimage;
 
+import android.os.Vibrator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -9,9 +10,10 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
-    RecyclerAdapter adapter;
 
-    public ItemTouchHelperCallback(RecyclerAdapter adapter){
+    ItemTouchHelperAdapter adapter;
+
+    public ItemTouchHelperCallback(RecyclerAdapterForDragAndDrop adapter){
         this.adapter = adapter;
     }
 
@@ -34,11 +36,12 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         //adapter
+        adapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        //adapter
+        //adapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 }

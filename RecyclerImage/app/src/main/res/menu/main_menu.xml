@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/addButt"
+        android:icon="@drawable/ic_add_circle_black_24dp"
+        android:title="@string/add"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/captureButt"
+        android:icon="@drawable/ic_camera_alt_black_24dp"
+        android:title="Capture"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/nextButt"
+        android:icon="@drawable/ic_arrow_forward_black_24dp"
+        android:title="@string/next"
+        app:showAsAction="always"/>
+
+</menu>

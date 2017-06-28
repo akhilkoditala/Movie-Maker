@@ -43,12 +43,14 @@ public class ImageSpan1 extends AppCompatActivity {
 
         long duration = getDuration();
         Log.d("Duration in Seconds : ",""+duration);
-        long ratio = (long)Math.ceil(duration/imagesPath.size());
+        long ratio = (duration+imagesPath.size()-1)/imagesPath.size();
         ratio = Math.min(ratio,(long)4);
         ratio--;
 
-        for(String s : imagesPath)
-            imagesLen.add(ratio+"");
+        for(String s : imagesPath) {
+            imagesLen.add(ratio + "");
+            Log.d("Ratio : ",""+ratio);
+        }
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewImageSpan);
         layout = new GridLayoutManager(ImageSpan1.this,numberOfColumns);
